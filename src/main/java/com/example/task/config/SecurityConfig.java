@@ -5,6 +5,7 @@ package com.example.task.config;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,9 @@ import com.example.task.jwt.JwtAuthFilter;
 
 @Configuration
 public class SecurityConfig {
+	
+	@Value("${frontend.url}")
+	private String frontendUrl;
 	
 	@Autowired
     private JwtAuthFilter jwtAuthFilter;
@@ -42,7 +46,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // React app
+        configuration.setAllowedOrigins(List.of(frontendUrl)); // React app
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // needed if using cookies / JWT with Authorization header

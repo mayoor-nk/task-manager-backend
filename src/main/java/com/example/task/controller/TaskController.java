@@ -1,10 +1,13 @@
 package com.example.task.controller;
 
+import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,55 +25,45 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/tasks")
+@CrossOrigin(origins = "http://localhost:3000")
 public class TaskController {
 
 	@Autowired
-	private final TaskService taskService;
-
-	public TaskController(TaskService taskService) {
-		this.taskService = taskService;
-	}
-
-	
-	@PostMapping 
-	public ResponseEntity<Task> createTask(@Valid @RequestBody TaskRequest req) { 
-		Task task=new Task(
-		        req.getTitle(),
-		        req.getDescription(),
-		        req.getDueDate(),
-		        req.getStatus() == null ? Task.Status.TODO : req.getStatus()
-		    );
-		Task saved = taskService.createTask(task);
-		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-	}
-	 
-	
+	private TaskService taskService;
 
 	@GetMapping
-	public ResponseEntity<List<Task>> getAllTasks() {
-		return ResponseEntity.ok(taskService.getAllTasks());
-	}
+    public List<Task> getTasks(Principal principal) {
+        return taskService.getTasks(principal.getName());
+    }
 
-	@GetMapping("/{id}")
-	public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
-		return ResponseEntity.ok(taskService.getTaskById(id));
-	}
+    @PostMapping
+    public Task createTask(@RequestBody TaskRequest request, Principal principal) {
+        return taskService.createTask(request, principal.getName());
+    }
 
-	@PutMapping("/{id}")
-	public ResponseEntity<Task> updateTask(@PathVariable Long id,@Valid @RequestBody TaskRequest req) {
-		Task updatedTask = new Task(
-				req.getTitle(),
-		        req.getDescription(),
-		        req.getDueDate(),
-		        req.getStatus() == null ? Task.Status.TODO : req.getStatus()
-				);
-		Task saved=taskService.updateTask(id, updatedTask);
-		return ResponseEntity.ok(saved);
-	}
+    @PutMapping("/{id}")
+    public Task updateTask(@PathVariable Long id, @RequestBody TaskRequest request, Principal principal) {
+        return taskService.updateTask(id, request, principal.getName());
+    }
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-		taskService.deleteTask(id);
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping("/{id}")
+    public void deleteTask(@PathVariable Long id, Principal principal) {
+        taskService.deleteTask(id, principal.getName());
+    }
+
+    // Filtering endpoints
+    @GetMapping("/status/{status}")
+    public List<Task> filterByStatus(@PathVariable String status, Principal principal) {
+        return taskService.filterByStatus(principal.getName(), status);
+    }
+
+    @GetMapping("/priority/{priority}")
+    public List<Task> filterByPriority(@PathVariable String priority, Principal principal) {
+        return taskService.filterByPriority(principal.getName(), priority);
+    }
+
+    @GetMapping("/dueBefore/{date}")
+    public List<Task> filterByDueDate(@PathVariable String date, Principal principal) {
+        return taskService.filterByDueDate(principal.getName(), LocalDate.parse(date));
+    }
 }

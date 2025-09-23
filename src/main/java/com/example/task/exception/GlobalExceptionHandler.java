@@ -16,6 +16,8 @@ import org.springframework.web.context.request.WebRequest;
 import com.example.task.model.ErrorResponse;
 import com.example.task.model.ValidationErrorResponse;
 
+import io.jsonwebtoken.ExpiredJwtException;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 	
@@ -72,4 +74,10 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<String> handleExpiredJwt(ExpiredJwtException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("JWT token has expired. Please login again.");
+    }
+
 }

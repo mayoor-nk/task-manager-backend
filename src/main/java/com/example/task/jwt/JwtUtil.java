@@ -14,7 +14,7 @@ import java.security.Key;
 public class JwtUtil {
 
 	private final String SECRET = "mysecretkeymysecretkeymysecretkey123"; // must be at least 32 chars
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private final long EXPIRATION = 1000 * 60 * 60 * 3; // 1 hour
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 

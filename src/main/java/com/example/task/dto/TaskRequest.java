@@ -3,7 +3,6 @@ package com.example.task.dto;
 import java.time.LocalDate;
 
 import com.example.task.model.Task;
-import com.example.task.model.Task.Status;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -21,20 +20,21 @@ public class TaskRequest {
     private String title;
 
     private String description;
+    
+    private String status;   // optional → default = PENDING
+    private String priority; // optional → default = MEDIUM
 
     @FutureOrPresent(message = "dueDate must be today or in the future")
     private LocalDate dueDate;
 
-    // optional on create — if null we'll default to TODO in controller/service
-    private Task.Status status;
-
     public TaskRequest() {}
 
-    public TaskRequest(String title, String description, LocalDate dueDate, Task.Status status) {
+    public TaskRequest(String title, String description, String status, String priority, LocalDate dueDate) {
         this.title = title;
         this.description = description;
-        this.dueDate = dueDate;
         this.status = status;
+        this.priority = priority;
+        this.dueDate = dueDate;
     }
 
 	public String getTitle() {
@@ -53,6 +53,22 @@ public class TaskRequest {
 		this.description = description;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getPriority() {
+		return priority;
+	}
+
+	public void setPriority(String priority) {
+		this.priority = priority;
+	}
+
 	public LocalDate getDueDate() {
 		return dueDate;
 	}
@@ -61,15 +77,6 @@ public class TaskRequest {
 		this.dueDate = dueDate;
 	}
 
-	public Task.Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Task.Status status) {
-		this.status = status;
-	}
-    
-    
-    
+	
     
 }
